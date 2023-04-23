@@ -23,8 +23,6 @@ class AuthorApiKtTest : ServerTest() {
         val post = RestAssured.given()
             .jsonBody(record)
             .post("/author/add")
-
-        post
             .toResponse<AuthorResponse>().let { response ->
                 Assert.assertEquals(record.fullName, response.fullName)
                 Assert.assertNotNull(response.createdAt)

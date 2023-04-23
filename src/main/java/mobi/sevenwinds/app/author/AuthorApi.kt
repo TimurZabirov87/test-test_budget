@@ -28,7 +28,7 @@ data class AuthorRequest(
 )
 
 data class AuthorResponse(
+    val id: Int,
     val fullName: String,
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS", shape = JsonFormat.Shape.STRING)
     var createdAt: LocalDateTime
 )

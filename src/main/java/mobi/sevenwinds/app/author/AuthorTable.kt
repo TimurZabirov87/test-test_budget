@@ -6,6 +6,8 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 
+
+
 object AuthorTable : IntIdTable("author") {
     val fullName = text("full_name")
     val createdAt = datetime("created_at")
@@ -18,6 +20,6 @@ class AuthorEntity(id: EntityID<Int>) : IntEntity(id) {
     var createdAt by AuthorTable.createdAt
 
     fun toResponse(): AuthorResponse {
-        return AuthorResponse(fullName, createdAt.toLDT())
+        return AuthorResponse(id.value, fullName, createdAt.toLDT())
     }
 }

@@ -53,6 +53,7 @@ object BudgetService {
                 BudgetTable.month,
                 BudgetTable.amount,
                 BudgetTable.type,
+                AuthorTable.id,
                 AuthorTable.fullName,
                 AuthorTable.createdAt
             )
@@ -75,7 +76,7 @@ object BudgetService {
         transaction {
             for (row in query) {
                 val author = if (row[AuthorTable.fullName] != null) {
-                    AuthorResponse(row[AuthorTable.fullName], row[AuthorTable.createdAt].toLDT())
+                    AuthorResponse(row[AuthorTable.id].value, row[AuthorTable.fullName], row[AuthorTable.createdAt].toLDT())
                 } else {
                     null
                 }

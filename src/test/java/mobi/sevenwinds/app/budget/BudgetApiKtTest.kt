@@ -1,8 +1,10 @@
 package mobi.sevenwinds.app.budget
 
 import io.restassured.RestAssured
+import mobi.sevenwinds.app.author.AuthorRequest
 import mobi.sevenwinds.app.author.AuthorTable
 import mobi.sevenwinds.common.ServerTest
+import mobi.sevenwinds.common.addAuthor
 import mobi.sevenwinds.common.jsonBody
 import mobi.sevenwinds.common.toResponse
 import org.jetbrains.exposed.sql.deleteAll
@@ -39,6 +41,34 @@ class BudgetApiKtTest : ServerTest() {
 
                 Assert.assertEquals(5, response.total)
                 Assert.assertEquals(3, response.items.size)
+                Assert.assertEquals(105, response.totalByType[BudgetType.Приход.name])
+            }
+    }
+
+    @Test
+    fun testBudgetPaginationWithAuthor() {
+
+        val authorId1 = addAuthor(AuthorRequest("Warren Buffet")).id
+        val authorId2 = addAuthor(AuthorRequest("Mikluho Maklay")).id
+        addRecord(BudgetRecord(2020, 5, 10, BudgetType.Приход, authorId1))
+        addRecord(BudgetRecord(2020, 5, 5, BudgetType.Приход, authorId1))
+        addRecord(BudgetRecord(2020, 5, 20, BudgetType.Приход, authorId1))
+        addRecord(BudgetRecord(2020, 5, 30, BudgetType.Приход, authorId2))
+        addRecord(BudgetRecord(2020, 5, 40, BudgetType.Приход, authorId2))
+        addRecord(BudgetRecord(2030, 1, 1, BudgetType.Расход, null))
+
+        RestAssured.given()
+            .queryParam("limit", 2)
+            .queryParam("offset", 1)
+            .queryParam("search", "arre")
+            .get("/budget/year/2020/stats")
+            .toResponse<BudgetYearStatsResponse>().let { response ->
+                println("${response.total} / ${response.items} / ${response.totalByType}")
+
+                Assert.assertEquals(5, response.total)
+                Assert.assertEquals(2, response.items.size)
+                Assert.assertEquals("Warren Buffet", response.items[0].author?.fullName)
+                Assert.assertEquals("Warren Buffet", response.items[1].author?.fullName)
                 Assert.assertEquals(105, response.totalByType[BudgetType.Приход.name])
             }
     }

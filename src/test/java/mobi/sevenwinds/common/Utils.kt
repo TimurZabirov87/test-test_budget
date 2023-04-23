@@ -23,11 +23,11 @@ fun RequestSpecification.When(): RequestSpecification {
     return this.`when`()
 }
 
-fun addAuthor(record: AuthorRequest) {
+fun addAuthor(record: AuthorRequest): AuthorResponse{
     RestAssured.given()
         .jsonBody(record)
         .post("/author/add")
         .toResponse<AuthorResponse>().let { response ->
-            Assert.assertEquals(record.fullName, response.fullName)
+            return response
         }
 }
